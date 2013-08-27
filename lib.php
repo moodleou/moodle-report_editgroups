@@ -36,19 +36,22 @@ function report_editgroups_extend_navigation_course($navigation, $course, $conte
     global $CFG, $OUTPUT;
     if (has_capability('report/editgroups:view', $context)) {
         $url = new moodle_url('/report/editgroups/index.php', array('id'=>$course->id));
+        if ($activitytype = optional_param('activitytype', '', PARAM_PLUGIN)) {
+            $url->param('activitytype', $activitytype);
+        }
         $navigation->add(get_string( 'editgroups', 'report_editgroups' ),
-             $url, navigation_node::TYPE_SETTING,
+                $url, navigation_node::TYPE_SETTING,
                 null, null, new pix_icon('i/report', ''));
     }
 }
 
 /**
-* Return a list of page types
-* @param string $pagetype current page type
-* @param stdClass $parentcontext Block's parent context
-* @param stdClass $currentcontext Current context of block
-* @return array
-*/
+ * Return a list of page types
+ * @param string $pagetype current page type
+ * @param stdClass $parentcontext Block's parent context
+ * @param stdClass $currentcontext Current context of block
+ * @return array
+ */
 function report_editgroups_page_type_list($pagetype, $parentcontext, $currentcontext) {
     return array(
         '*'                       => get_string('page-x', 'pagetype'),

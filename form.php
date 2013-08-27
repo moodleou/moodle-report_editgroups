@@ -36,215 +36,219 @@ require_once($CFG->libdir.'/formslib.php');
 class report_editgroups_form extends moodleform {
 
     public function definition() {
-        //global variables
-        global $CFG, $DB, $COURSE;
-        //get the form reference
-        $mform =& $this->_form;
-        //fetching $modinfo from the constructor data array
-        $modinfo = $this->_customdata['modinfo'];
-        //fetching $course from the constructor data array
-        $course = $this->_customdata['course'];
-        //fetching all the sections in the course
-        $sections = get_all_sections($modinfo->courseid);
-        //default -1 to display header for 0th section
-        $prevsecctionnum = -1;
-        //groupings selector - used for normal grouping mode
-        //or also when restricting access with groupmembers only
+        global $CFG, $COURSE, $DB;
+        $mform = $this->_form;
+
+        $modinfo       = $this->_customdata['modinfo'];
+        $course        = $this->_customdata['course'];
+        $activitytype  = $this->_customdata['activitytype'];
+
+        // Context instance of the course.
+        $coursecontext = context_course::instance($course->id);
+
+        // Groupings selector - used for normal grouping mode
+        // or also when restricting access with groupmembers only.
         $options = array();
         $options[0] = get_string('none');
-        //fetching groupings available to this course
+        // Fetching groupings available to this course.
         if ($groupings = $DB->get_records('groupings', array('courseid'=>$COURSE->id))) {
             foreach ($groupings as $grouping) {
                 $options[$grouping->id] = format_string($grouping->name);
             }
         }
-        //flags to honour course level settings
+        // Flags to honour course level settings.
         $forcegroupmode = false;
 
-        if ($COURSE->groupmodeforce) {        //if group mode is forced @ course level
+        // If group mode is forced @ course level.
+        if ($COURSE->groupmodeforce) {
             $forcegroupmode = true;
         }
-        // for showing submit buttons
+        // For showing submit buttons.
         $showactionbuttons = false;
-        //cycle through all the sections in the course
-        foreach ($modinfo->sections as $sectionnum => $section) {
-            //var to count the number of elements in the section.
-            // It will be used to remove section if it is empty
+
+        // Store current activity type.
+        $mform->addElement('hidden', 'activitytype', $activitytype);
+        $mform->setType('activitytype', PARAM_PLUGIN);
+
+        // Add save action button to the top of the form.
+        $this->add_action_buttons();
+
+        // Default -1 to display header for 0th section.
+        $prevsectionnum = -1;
+
+        // Cycle through all the sections in the course.
+        $cms = $modinfo->get_cms();
+        foreach ($modinfo->get_sections() as $sectionnum => $section) {
+            // Var to count the number of elements in the section.
+            // It will be used to remove section if it is empty.
             $elementadded = 0;
-            //var to store current section name
+            // Var to store current section name.
             $sectionname = '';
-            //cycle through each module in a section
+            // Cycle through each module in a section.
             foreach ($section as $cmid) {
-                //fetching the course module object from the $modinfo array.
-                $cm = $modinfo->cms[$cmid];
-                //no need to display/continue if this module is not visible to user
+                $cm = $cms[$cmid];
+
+                // No need to display/continue if this module is not visible to user.
                 if (!$cm->uservisible) {
                     continue;
                 }
-                //flag to check if user has the capability to edit this module
-                $ismodreadonly = false;
-                //context instance of the module
-                $context = get_context_instance(CONTEXT_MODULE, $cm->id);
-                //check if user has capability to edit this module
-                if (!has_capability('moodle/course:manageactivities', $context)) {
-                    $ismodreadonly = true;        //update flag if user is not capable
+
+                // If activity filter is on, then filter module by activity type.
+                if ($activitytype && $cm->modname != $activitytype) {
+                    continue;
                 }
-                //flags to determine availabiltity of group features
-                $isenabledgroups             = false;
-                $isenabledgroupings         = false;
-                $isenabledgroupmemebersonly = false;
-                //set flag to true if module support FEATURE_GROUPS
-                //default is set to true since default value for each module
-                //is set to true in course/moodleform_mod.php line 78
-                if (plugin_supports('mod', $cm->modname, FEATURE_GROUPS, true)) {
-                    $isenabledgroups = true;
-                }
-                //set flag to true if module support FEATURE_GROUPINGS
-                if (plugin_supports('mod', $cm->modname, FEATURE_GROUPINGS, false)) {
-                    $isenabledgroupings = true;
-                }
-                //set flag to true if module support FEATURE_GROUPMEMBERSONLY
-                if (plugin_supports('mod', $cm->modname, FEATURE_GROUPMEMBERSONLY, false)) {
-                    $isenabledgroupmemebersonly = true;
-                }
-                //only if the module supports either of 3 possible
-                //group settings then proceed further
+
+                // Check if the user has capability to edit this module settings.
+                $modcontext = context_module::instance($cm->id);
+                $ismodreadonly = !has_capability('moodle/course:manageactivities', $modcontext);
+
+                // Flags to determine availabiltity of group features.
+                $isenabledgroups            = plugin_supports('mod', $cm->modname, FEATURE_GROUPS, true);
+                $isenabledgroupings         = plugin_supports('mod', $cm->modname, FEATURE_GROUPINGS, false);
+                $isenabledgroupmemebersonly = plugin_supports('mod', $cm->modname, FEATURE_GROUPMEMBERSONLY, false);
+
+                // Only if the module supports either of 3 possible
+                // group settings then proceed further.
                 if ($isenabledgroups or $isenabledgroupings or
                          ($isenabledgroupmemebersonly && $CFG->enablegroupmembersonly)) {
-                    //new section, create header
-                    if ($prevsecctionnum != $sectionnum) {
-                        $sectionname = get_section_name($course, $sections[$sectionnum]);
-                        $mform->addElement('header', $sectionname, $sectionname);
-                        $prevsecctionnum = $sectionnum;
+                    // New section, create header.
+                    if (($prevsectionnum != $sectionnum)) {
+                        $sectionname = get_section_name($course, $modinfo->get_section_info($sectionnum));
+                        $headername = 'section' . $sectionnum . 'header';
+                        $mform->addElement('header', $headername, $sectionname);
+                        $mform->setExpanded($headername, false);
+                        $prevsectionnum = $sectionnum;
                     }
-                    //fetching activity name with <h3> tag.
-                    $stractivityname = html_writer::tag('h3', $cm->name);
-                    //activity name shall be displayed only if any group mode setting is
-                    //visible for the user check if group mode is enabled or
-                    //availability to group mode is enabled @ site level
+
+                    // Display activity name.
+                    $iconmarkup = html_writer::empty_tag('img', array(
+                            'src' => $cm->get_icon_url(), 'class' => 'activityicon', 'alt' => '' ));
+                    $stractivityname = html_writer::tag('strong' , $iconmarkup . $cm->name);
+
+                    // Activity name shall be displayed only if any group mode setting is
+                    // visible for the user check if group mode is enabled or
+                    // availability to group mode is enabled @ site level.
                     if ($CFG->enablegroupmembersonly || $isenabledgroups) {
-                        //added activity name on the form
+                        // Added activity name on the form.
                         $mform->addElement('static', 'modname', $stractivityname);
                     }
-                    //var to store element name
+                    // Var to store element name.
                     $elname = '';
-                    //if group mode is enabled for this module
+                    // If group mode is enabled for this module.
                     if ($isenabledgroups) {
                         $groupoptions = array(NOGROUPS => get_string('groupsnone'),
                         SEPARATEGROUPS => get_string('groupsseparate'),
                         VISIBLEGROUPS  => get_string('groupsvisible'));
 
-                        //create element name and append course module id to it.
+                        // Create element name and append course module id to it.
                         $elname = 'groupmode['.$cm->id.']';
-                        //set flag to show action buttons
-                        $showactionbuttons = true;
-                        //add element to the form
+                        // Add element to the form.
                         $mform->addElement('select', $elname, get_string('groupmode',
-                             'group'), $groupoptions, NOGROUPS);
+                                'group'), $groupoptions, NOGROUPS);
                         $mform->addHelpButton($elname, 'groupmode', 'group');
-                         //if group mode is forced @ course level, then honour those settings
+                         // If group mode is forced @ course level, then honour those settings.
                         if ($forcegroupmode) {
                             $mform->setDefault($elname, $COURSE->groupmode);
                         } else {
                             $mform->setDefault($elname, $cm->groupmode);
                         }
-                        /*if groupmode is forced or user is not capable
-                         * to edit this setting, it should appear readonly
-                         */
+                        // If groupmode is forced or user is not capable
+                        // to edit this setting, it should appear readonly.
                         if ($forcegroupmode || $ismodreadonly) {
                             $mform->hardFreeze($elname);
                         }
-                        //increment the counter since an element is added
+                        // Increment the counter since an element is added.
                         $elementadded++;
                     }
-                    /* display grouping option only if groupings are enabled for this module
-                     * or if this activity available only to group members
-                     *
-                     */
+                    // Display grouping option only if groupings are enabled for this module
+                    // or if this activity available only to group members.
                     if ($isenabledgroupings or $isenabledgroupmemebersonly) {
-                        //adding element(select box for grouping) to the form
+                        // Adding element(select box for grouping) to the form.
                         $elname = 'groupingid['.$cm->id.']';
                         $mform->addElement('select', $elname,
-                             get_string('grouping', 'group'), $options);
+                                get_string('grouping', 'group'), $options);
                         $mform->addHelpButton($elname, 'grouping', 'group');
                         $mform->setDefault($elname, $cm->groupingid);
 
-                        //if user is not capable to edit this setting, it should appear readonly
+                        // If user is not capable to edit this setting, it should appear readonly.
                         if ($ismodreadonly) {
                             $mform->hardFreeze($elname);
                         }
-                        //increment the counter since an element is added
+                        // Increment the counter since an element is added.
                         $elementadded++;
                     }
 
-                    //check if group members only is enabled @ site level and module level as well
+                    // Check if group members only is enabled @ site level and module level as well.
                     if ($CFG->enablegroupmembersonly && $isenabledgroupmemebersonly) {
-                        //adding element(checkbox) to the form
+                        // Adding element(checkbox) to the form.
                         $elname = 'groupmembersonly['.$cm->id.']';
-                        $mform->addElement('checkbox', $elname,
-                             get_string('groupmembersonly', 'group'));
+                        $mform->addElement('advcheckbox', $elname,
+                                get_string('groupmembersonly', 'group'));
                         $mform->addHelpButton($elname, 'groupmembersonly', 'group');
                         if ($cm->groupmembersonly) {
-                            $mform->setDefault($elname, array('checked' => 'checked'));
+                            $mform->setDefault($elname, true);
                         }
 
-                        //if user is not capable to edit this setting, it should appear readonly
+                        // If user is not capable to edit this setting, it should appear readonly.
                         if ($ismodreadonly) {
                             $mform->hardFreeze($elname);
                         }
-                        //increment the counter since an element is added
+                        // Increment the counter since an element is added.
                         $elementadded++;
                     }
-                    /* if group mode is enabled and available to
-                     * group members does not exist for this module,
-                     * then the grouping selector should be disabled by default
-                     */
-                    if ($mform->elementExists('groupmode['.$cmid.']')
-                        and !$mform->elementExists('groupmembersonly['.$cmid.']')
-                        and !$forcegroupmode) {
-                        $mform->disabledif ('groupingid['.$cmid.']',
-                             'groupmode['.$cmid.']', 'eq', NOGROUPS);
-                    } else if (!$mform->elementExists('groupmode['.$cmid.']')
-                        and $mform->elementExists('groupmembersonly['.$cmid.']')) {
-                        /* if group mode is not present and available to group
-                         * members only is present,then grouping option
-                         * should be disabled by default
-                         */
-                        $mform->disabledif ('groupingid['.$cmid.']',
-                             'groupmembersonly['.$cmid.']', 'notchecked');
-                    } else if (!$mform->elementExists('groupmode['.$cmid.']')
-                         and !$mform->elementExists('groupmembersonly['.$cmid.']')) {
-                        /*  if groupmode and available to groupmembers only does
-                         *  not exist for a module, then grouping option should not exist
-                         *  for that module groupings have no use without
-                         *  groupmode or groupmembersonly
-                         *
-                         */
-                        if ($mform->elementExists('groupingid['.$cmid.']')) {
-                            $mform->removeElement('groupingid['.$cmid.']');
-                            //decrement the counter since an element is removed
-                            $elementadded--;
+
+                    // If group mode is enabled and available to
+                    // group members does not exist for this module,
+                    // then the grouping selector should be disabled by default,
+                    // but only if a grouping is not already set.
+                    if (!$cm->groupingid) {
+                        if ($mform->elementExists('groupmode['.$cmid.']')
+                                && !$mform->elementExists('groupmembersonly['.$cmid.']')
+                                && !$forcegroupmode) {
+                            $mform->disabledif('groupingid['.$cmid.']',
+                                 'groupmode['.$cmid.']', 'eq', NOGROUPS);
+
+                        } else if (!$mform->elementExists('groupmode['.$cmid.']')
+                                && $mform->elementExists('groupmembersonly['.$cmid.']')) {
+                            // If group mode is not present and available to group
+                            // members only is present,then grouping option
+                            // should be disabled by default.
+                            $mform->disabledif('groupingid['.$cmid.']',
+                                 'groupmembersonly['.$cmid.']', 'notchecked');
+
+                        } else if (!$mform->elementExists('groupmode['.$cmid.']')
+                                && !$mform->elementExists('groupmembersonly['.$cmid.']')) {
+                            // If groupmode and available to groupmembers only does
+                            // not exist for a module, then grouping option should not exist
+                            // for that module groupings have no use without
+                            // groupmode or groupmembersonly.
+                            if ($mform->elementExists('groupingid['.$cmid.']')) {
+                                $mform->removeElement('groupingid['.$cmid.']');
+                                // Decrement the counter since an element is removed.
+                                $elementadded--;
+                            }
                         }
                     }
                 }
             }
-            /* if section is added and no element added in this section,
-             * then remove the empty section
-             *
-             */
-            if ($elementadded == 0 && $mform->elementExists($sectionname)) {
+
+            // If section is added and no element added in this section,
+            // then remove the empty section.
+            if (($elementadded == 0) && ($sectionname != '') && $mform->elementExists($sectionname)) {
                 $mform->removeElement($sectionname);
+            }
+            if (!$showactionbuttons && $elementadded > 0) {
+                // Set flag to show action buttons.
+                $showactionbuttons = true;
             }
         }
 
-        //adding submit/cancel buttons @ the end of the form
+        // Adding submit/cancel buttons @ the end of the form.
         if ($showactionbuttons) {
             $this->add_action_buttons();
         } else {
-            // <div> is used for center align the continue link
-            $continue_url = new moodle_url('/course/view.php', array('id' => $course->id));
-            $mform->addElement('html', "<div style=text-align:center><a href="
-                .$continue_url."><b>[Continue]</b></a></div>");
+            // Remove top action button.
+            $mform->removeElement('buttonar');
         }
     }
 }

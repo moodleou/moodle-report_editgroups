@@ -1,0 +1,27 @@
+Initial Setup
+=============
+
+You need one test course with a few activities (fewer than 20), and one test
+course with many activities (more than 20), including at least one of each type.
+In both courses, make sure you have some ground and groupings set up.
+
+Test script
+===========
+
+1.  In the small course, go to Administration -> Reports -> Grades.
+2.  At the top will be an 'Activity type' selector. This should be set to 'All activities'.
+3.  Then there will be a form with a section at for each course section containing
+    relevant activites. In each section will be all the groups settings for each
+    activity.
+4.  Change some settings here, then go to the standard edit settings page for that
+    activity, and ensure that the changed settings have been saved.
+5.  Change some group settings in the standard activity settings from, go back to
+    the edit dates report, and ensure the updated dates are shown there.
+6.  Now go to the report for the large course. The report will automatically
+    swtich to only show one type of activity, to stop the form from being too big.
+7.  Switch through each activity type, and ensure that the groups settings in the
+    report have exactly the same set of groups settings as in the standard
+    activity settings form. Specific things to check are:
+    * which settings are displayed.
+    * that the disabled-if dependencies between the settings for each activity are
+      the same as on the editing form.

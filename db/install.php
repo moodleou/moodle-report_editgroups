@@ -38,11 +38,11 @@ function xmldb_report_editgroups_install() {
                 array('capability' => 'coursereport/editgroups:view'));
     }
 
-    // This is a hack which is needed for cleanup of original coursereport_completion stuff
+    // This is a hack which is needed for cleanup of original coursereport_completion stuff.
     unset_all_config_for_plugin('coursereport_editgroups');
     capabilities_cleanup('coursereport_editgroups');
 
-    // Update existing block page patterns
+    // Update existing block page patterns.
     $DB->set_field('block_instances', 'pagetypepattern', 'report-editgroups-index',
             array('pagetypepattern' => 'course-report-editgroups-index'));
 }
