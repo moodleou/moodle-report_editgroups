@@ -116,7 +116,6 @@ class report_editgroups_form extends moodleform {
                         $sectionname = get_section_name($course, $modinfo->get_section_info($sectionnum));
                         $headername = 'section' . $sectionnum . 'header';
                         $mform->addElement('header', $headername, $sectionname);
-                        $mform->setExpanded($headername, false);
                         $prevsectionnum = $sectionnum;
                     }
 
