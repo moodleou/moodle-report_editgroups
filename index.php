@@ -119,7 +119,7 @@ if ($mform->is_cancelled()) {
     $transaction = $DB->start_delegated_transaction();
     // Looping through all the modules in the course.
     foreach ($modinfo->get_cms() as $cmid => $cm) {
-        $modulecontext = get_context_instance(CONTEXT_MODULE, $cmid);
+        $modulecontext = context_module::instance($cmid);
         // Update only if user can manage activities in course context.
         if (has_capability('moodle/course:manageactivities', $modulecontext)) {
             // Object that will be used for updating the course module.
