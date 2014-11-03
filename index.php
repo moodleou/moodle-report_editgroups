@@ -166,8 +166,9 @@ $select->set_label(get_string('activitytypefilter', 'report_editgroups'));
 $select->set_help_icon('activitytypefilter', 'report_editgroups');
 
 // Making log entry.
-add_to_log($course->id, 'course', 'report edit groups',
-        "report/editgroups/index.php?id=$course->id", $course->id);
+$event = \report_editgroups\event\report_viewed::create(
+        array('context' => $coursecontext, 'other' => array('activitytype' => $activitytype)));
+$event->trigger();
 
 // Set page title and page heading.
 $PAGE->set_title($course->shortname . ': ' . get_string('editgroups' , 'report_editgroups'));

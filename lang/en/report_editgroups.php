@@ -33,3 +33,4 @@ $string['editgroups'] = 'Groups';
 $string['editgroups:view'] = 'View edit groups course report';
 $string['page-report-editdates-index'] = 'Edit course group settings';
 $string['pluginname'] = 'Groups';
+$string['event:reportviewed'] = 'Edit groups report viewed';
