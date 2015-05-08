@@ -65,9 +65,7 @@ foreach ($modinfo->get_sections() as $sectionnum => $section) {
         // Filter activities to those that are relevant to this report.
         if (!$cm->uservisible ||
                 !(plugin_supports('mod', $cm->modname, FEATURE_GROUPS, true) ||
-                plugin_supports('mod', $cm->modname, FEATURE_GROUPINGS, false) ||
-                (plugin_supports('mod', $cm->modname, FEATURE_GROUPMEMBERSONLY, false) &&
-                $CFG->enablegroupmembersonly))) {
+                plugin_supports('mod', $cm->modname, FEATURE_GROUPINGS, false))) {
             continue;
         }
 

@@ -105,12 +105,10 @@ class report_editgroups_form extends moodleform {
                 // Flags to determine availabiltity of group features.
                 $isenabledgroups            = plugin_supports('mod', $cm->modname, FEATURE_GROUPS, true);
                 $isenabledgroupings         = plugin_supports('mod', $cm->modname, FEATURE_GROUPINGS, false);
-                $isenabledgroupmemebersonly = plugin_supports('mod', $cm->modname, FEATURE_GROUPMEMBERSONLY, false);
 
                 // Only if the module supports either of 3 possible
                 // group settings then proceed further.
-                if ($isenabledgroups or $isenabledgroupings or
-                         ($isenabledgroupmemebersonly && $CFG->enablegroupmembersonly)) {
+                if ($isenabledgroups or $isenabledgroupings) {
                     // New section, create header.
                     if (($prevsectionnum != $sectionnum)) {
                         $sectionname = get_section_name($course, $modinfo->get_section_info($sectionnum));
@@ -128,7 +126,7 @@ class report_editgroups_form extends moodleform {
                     // Activity name shall be displayed only if any group mode setting is
                     // visible for the user check if group mode is enabled or
                     // availability to group mode is enabled @ site level.
-                    if ($CFG->enablegroupmembersonly || $isenabledgroups) {
+                    if ($isenabledgroups) {
                         // Added activity name on the form.
                         $mform->addElement('static', 'modname', $stractivityname);
                     }
@@ -162,32 +160,13 @@ class report_editgroups_form extends moodleform {
                     }
                     // Display grouping option only if groupings are enabled for this module
                     // or if this activity available only to group members.
-                    if ($isenabledgroupings or $isenabledgroupmemebersonly) {
+                    if ($isenabledgroupings) {
                         // Adding element(select box for grouping) to the form.
                         $elname = 'groupingid['.$cm->id.']';
                         $mform->addElement('select', $elname,
                                 get_string('grouping', 'group'), $options);
                         $mform->addHelpButton($elname, 'grouping', 'group');
                         $mform->setDefault($elname, $cm->groupingid);
-
-                        // If user is not capable to edit this setting, it should appear readonly.
-                        if ($ismodreadonly) {
-                            $mform->hardFreeze($elname);
-                        }
-                        // Increment the counter since an element is added.
-                        $elementadded++;
-                    }
-
-                    // Check if group members only is enabled @ site level and module level as well.
-                    if ($CFG->enablegroupmembersonly && $isenabledgroupmemebersonly) {
-                        // Adding element(checkbox) to the form.
-                        $elname = 'groupmembersonly['.$cm->id.']';
-                        $mform->addElement('advcheckbox', $elname,
-                                get_string('groupmembersonly', 'group'));
-                        $mform->addHelpButton($elname, 'groupmembersonly', 'group');
-                        if ($cm->groupmembersonly) {
-                            $mform->setDefault($elname, true);
-                        }
 
                         // If user is not capable to edit this setting, it should appear readonly.
                         if ($ismodreadonly) {
