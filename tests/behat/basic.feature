@@ -49,8 +49,8 @@ Feature: Edit course plugin groups
     And I should see "Test quiz name 2"
     And I should see "Test quiz name 3"
     # So, to aviod problems we only test the 2nd and 3rd sections.
-    And I set the field with xpath "//fieldset[@id='id_section2header']/div[@class='fcontainer clearfix']/div[2]/div[@class='felement fselect']/select" to "1"
-    And I set the field with xpath "//fieldset[@id='id_section3header']/div[@class='fcontainer clearfix']/div[2]/div[@class='felement fselect']/select" to "2"
+    And I set the field with xpath "//fieldset[@id='id_section2header']/div[@class='fcontainer clearfix']/div[2]/div[@class='felement fselect']/select" to "Separate groups"
+    And I set the field with xpath "//fieldset[@id='id_section3header']/div[@class='fcontainer clearfix']/div[2]/div[@class='felement fselect']/select" to "Visible groups"
     And I press "Save changes"
     Then I should see "Course 1"
     And I should see "Activity view filter "
@@ -58,5 +58,5 @@ Feature: Edit course plugin groups
     And I should see "Test quiz name 1"
     And I should see "Test quiz name 2"
     And I should see "Test quiz name 3"
-    And the "value" attribute of "//fieldset[@id='id_section2header']/div[@class='fcontainer clearfix']/div[2]/div[@class='felement fselect']/select" "xpath_element" should contain "1"
-    And the "value" attribute of "//fieldset[@id='id_section3header']/div[@class='fcontainer clearfix']/div[2]/div[@class='felement fselect']/select" "xpath_element" should contain "2"
+    And the field with xpath "//fieldset[@id='id_section2header']/div[@class='fcontainer clearfix']/div[2]/div[@class='felement fselect']/select" matches value "Separate groups"
+    And the field with xpath "//fieldset[@id='id_section3header']/div[@class='fcontainer clearfix']/div[2]/div[@class='felement fselect']/select" matches value "Visible groups"
