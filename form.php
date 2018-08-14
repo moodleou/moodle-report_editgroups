@@ -51,7 +51,7 @@ class report_editgroups_form extends moodleform {
         $options = array();
         $options[0] = get_string('none');
         // Fetching groupings available to this course.
-        if ($groupings = $DB->get_records('groupings', array('courseid'=>$COURSE->id))) {
+        if ($groupings = $DB->get_records('groupings', array('courseid' => $COURSE->id))) {
             foreach ($groupings as $grouping) {
                 $options[$grouping->id] = format_string($grouping->name);
             }

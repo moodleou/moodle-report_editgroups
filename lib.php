@@ -35,7 +35,7 @@ defined('MOODLE_INTERNAL') || die;
 function report_editgroups_extend_navigation_course($navigation, $course, $context) {
     global $CFG, $OUTPUT;
     if (has_capability('report/editgroups:view', $context)) {
-        $url = new moodle_url('/report/editgroups/index.php', array('id'=>$course->id));
+        $url = new moodle_url('/report/editgroups/index.php', array('id' => $course->id));
         if ($activitytype = optional_param('activitytype', '', PARAM_PLUGIN)) {
             $url->param('activitytype', $activitytype);
         }
