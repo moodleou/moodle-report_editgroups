@@ -39,7 +39,7 @@ Feature: Edit course plugin groups
   Scenario: Test edit groups report can be used to change plugin instance group settings
     When I log in as "admin"
     And I am on "Course 1" course homepage
-    And I navigate to "Groups" node in "Course administration > Reports"
+    And I navigate to "Reports > Groups" in current page administration
     And I follow "Groups"
     Then I should see "Course 1"
     And I should see "Activity view filter "
