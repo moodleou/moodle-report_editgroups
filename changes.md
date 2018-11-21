@@ -1,6 +1,11 @@
 # Change log for the Edit groups report
 
 
+## Changes in 2.6
+
+* Fix Behat for Moodle 3.6.
+
+
 ## Changes in 2.5
 
 * Privacy API implementation.
