@@ -22,10 +22,10 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->dirroot . '/course/lib.php');
 require_once(dirname(__FILE__) . '/form.php');
+use core\report_helper;
 
 define('REPORT_EDITGROUPS_ENABLE_FILTER_THRESHOLD', 20);
 
@@ -43,8 +43,10 @@ $urlparams = array('id' => $id);
 if ($activitytype) {
     $urlparams['activitytype'] = $activitytype;
 }
-$PAGE->set_url('/report/editgroups/index.php', $urlparams);
+$pageurl = new moodle_url('/report/editgroups/index.php', $urlparams);
+$PAGE->set_url($pageurl);
 $PAGE->set_pagelayout('admin');
+report_helper::save_selected_report($id, $pageurl);
 
 // Check permissions.
 $coursecontext = context_course::instance($course->id);
@@ -174,6 +176,11 @@ $PAGE->set_heading($course->fullname);
 
 // Displaying the form.
 echo $OUTPUT->header();
+
+// Print the selected dropdown.
+$pluginname = get_string('pluginname', 'report_editgroups');
+report_helper::print_report_selector($pluginname);
+
 echo $OUTPUT->heading(format_string($course->fullname));
 
 echo $OUTPUT->heading(get_string('activityfilter', 'report_editgroups'));
