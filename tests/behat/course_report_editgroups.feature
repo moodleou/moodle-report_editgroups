@@ -1,5 +1,5 @@
 @report @report_editgroups @ou @ou_vle
-Feature: In a course administration page, navigate through report page, test for course Groups page
+Feature: Edit groups report navigation
   In order to navigate through report page
   As an admin
   Go to course administration -> Reports -> Groups
@@ -17,10 +17,10 @@ Feature: In a course administration page, navigate through report page, test for
       | student1 | C1 | student |
 
   @javascript
-  Scenario: Selector should be available in the Activities and resources page
+  Scenario: Selector should be available in the Edit groups report
     Given I log in as "admin"
     And I am on "Course 1" course homepage
     When I navigate to "Reports > Groups" in current page administration
     Then "Report" "field" should exist
     And the "Report" select box should contain "Groups"
-    And the field "Report" matches value "Ggroups"
+    And the field "Report" matches value "Groups"
