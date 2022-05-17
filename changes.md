@@ -1,6 +1,15 @@
 # Change log for the Edit groups report
 
 
+## Changes in 2.7
+
+* This version works with Moodle 4.0.
+* Updated to use Moodle 3.11 navigation
+* The method report_helper::save_selected_report() has been been deprecated because it is no longer used in 4.0.
+  The report_helper::print_report_selector() is used to to show the dropdown, on the report page.
+* Switch from Travis to Github actions
+
+
 ## Changes in 2.6
 
 * Fix Behat for Moodle 3.6.

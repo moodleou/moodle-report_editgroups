@@ -21,8 +21,7 @@ Feature: Edit course plugin groups
       | student2 | C1     | student        |
       | student3 | C1     | student        |
       | student4 | C1     | student        |
-    And I log in as "teacher1"
-    And I am on "Course 1" course homepage
+    And I am on the "Course 1" "course" page logged in as "teacher1"
     And I turn editing mode on
     And I add a "Quiz" to section "1" and I fill the form with:
       | Name        | Test quiz name 1       |
@@ -37,19 +36,17 @@ Feature: Edit course plugin groups
 
   @javascript @_switch_iframe
   Scenario: Test edit groups report can be used to change plugin instance group settings
-    When I log in as "admin"
-    And I am on "Course 1" course homepage
+    When I am on the "Course 1" "course" page logged in as "admin"
     And I navigate to "Reports > Groups" in current page administration
-    And I follow "Groups"
     Then I should see "Course 1"
     And I should see "Activity view filter "
     And I follow "Expand all"
     And I should see "Test quiz name 1"
     And I should see "Test quiz name 2"
     And I should see "Test quiz name 3"
-    # So, to aviod problems we only test the 2nd and 3rd sections.
-    And I set the field with xpath "//fieldset[@id='id_section2header']/div[@class='fcontainer clearfix']/div[2]/div[contains(@class,'felement')]/select" to "Separate groups"
-    And I set the field with xpath "//fieldset[@id='id_section3header']/div[@class='fcontainer clearfix']/div[2]/div[contains(@class,'felement')]/select" to "Visible groups"
+    # So, to avoid problems we only test the 2nd and 3rd sections.
+    And I set the field with xpath "//fieldset[@id='id_section2header']//div[contains(@class,'felement')]/select" to "Separate groups"
+    And I set the field with xpath "//fieldset[@id='id_section3header']//div[contains(@class,'felement')]/select" to "Visible groups"
     And I press "Save changes"
     Then I should see "Course 1"
     And I should see "Activity view filter "
@@ -57,5 +54,5 @@ Feature: Edit course plugin groups
     And I should see "Test quiz name 1"
     And I should see "Test quiz name 2"
     And I should see "Test quiz name 3"
-    And the field with xpath "//fieldset[@id='id_section2header']/div[@class='fcontainer clearfix']/div[2]/div[contains(@class,'felement')]/select" matches value "Separate groups"
-    And the field with xpath "//fieldset[@id='id_section3header']/div[@class='fcontainer clearfix']/div[2]/div[contains(@class,'felement')]/select" matches value "Visible groups"
+    And the field with xpath "//fieldset[@id='id_section2header']//div[contains(@class,'felement')]/select" matches value "Separate groups"
+    And the field with xpath "//fieldset[@id='id_section3header']//div[contains(@class,'felement')]/select" matches value "Visible groups"
