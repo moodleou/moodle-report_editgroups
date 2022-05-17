@@ -46,7 +46,6 @@ if ($activitytype) {
 $pageurl = new moodle_url('/report/editgroups/index.php', $urlparams);
 $PAGE->set_url($pageurl);
 $PAGE->set_pagelayout('admin');
-report_helper::save_selected_report($id, $pageurl);
 
 // Check permissions.
 $coursecontext = context_course::instance($course->id);
