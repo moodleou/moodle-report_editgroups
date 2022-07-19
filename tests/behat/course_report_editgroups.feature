@@ -20,7 +20,8 @@ Feature: Edit groups report navigation
   Scenario: Selector should be available in the Edit groups report
     Given I log in as "admin"
     And I am on "Course 1" course homepage
-    When I navigate to "Reports > Groups" in current page administration
+    When I navigate to "Reports" in current page administration
+    And I click on "Groups" "link"
     Then "Report" "field" should exist
     And the "Report" select box should contain "Groups"
     And the field "Report" matches value "Groups"
