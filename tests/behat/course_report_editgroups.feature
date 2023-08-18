@@ -22,6 +22,5 @@ Feature: Edit groups report navigation
     And I am on "Course 1" course homepage
     When I navigate to "Reports" in current page administration
     And I click on "Groups" "link"
-    Then "Report" "field" should exist
-    And the "Report" select box should contain "Groups"
-    And the field "Report" matches value "Groups"
+    Then "Report" "field" should exist in the "tertiary-navigation" "region"
+    And I should see "Groups" in the "tertiary-navigation" "region"
