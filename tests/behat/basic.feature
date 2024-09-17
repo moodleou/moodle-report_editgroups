@@ -23,16 +23,12 @@ Feature: Edit course plugin groups
       | student4 | C1     | student        |
     And I am on the "Course 1" "course" page logged in as "teacher1"
     And I turn editing mode on
-    And I add a "Quiz" to section "1" and I fill the form with:
-      | Name        | Test quiz name 1       |
-      | Description | Test forum description |
-    And I add a "Quiz" to section "2" and I fill the form with:
-      | Name        | Test quiz name 2       |
-      | Description | Test forum description |
-    And I add a "Quiz" to section "3" and I fill the form with:
-      | Name        | Test quiz name 3       |
-      | Description | Test forum description |
-    Given I log out
+    And the following "activities" exist:
+      | activity | course | section | name             | intro                  |
+      | quiz     | C1     | 1       | Test quiz name 1 | Test forum description |
+      | quiz     | C1     | 2       | Test quiz name 2 | Test forum description |
+      | quiz     | C1     | 3       | Test quiz name 3 | Test forum description |
+    And I log out
 
   @javascript @_switch_iframe
   Scenario: Test edit groups report can be used to change plugin instance group settings
