@@ -1,6 +1,14 @@
 # Change log for the Edit groups report
 
 
+## Changes in 2.8
+
+* This version is compatible with Moodle 5.0.
+* Updated automated tests to work with newer Moodle versions.
+* Fixed coding style issues.
+* Log events: removed legacy logging methods for compatibility with Moodle 4.2.
+
+
 ## Changes in 2.7
 
 * This version works with Moodle 4.0.
