@@ -35,6 +35,7 @@ require_once($CFG->libdir.'/formslib.php');
  */
 class report_editgroups_form extends moodleform {
 
+    #[\Override]
     public function definition() {
         global $CFG, $COURSE, $DB;
         $mform = $this->_form;
@@ -48,10 +49,10 @@ class report_editgroups_form extends moodleform {
 
         // Groupings selector - used for normal grouping mode
         // or also when restricting access with groupmembers only.
-        $options = array();
+        $options = [];
         $options[0] = get_string('none');
         // Fetching groupings available to this course.
-        if ($groupings = $DB->get_records('groupings', array('courseid' => $COURSE->id))) {
+        if ($groupings = $DB->get_records('groupings', ['courseid' => $COURSE->id])) {
             foreach ($groupings as $grouping) {
                 $options[$grouping->id] = format_string($grouping->name);
             }
@@ -108,7 +109,7 @@ class report_editgroups_form extends moodleform {
 
                 // Only if the module supports either of 3 possible
                 // group settings then proceed further.
-                if ($isenabledgroups or $isenabledgroupings) {
+                if ($isenabledgroups || $isenabledgroupings) {
                     // New section, create header.
                     if (($prevsectionnum != $sectionnum)) {
                         $sectionname = get_section_name($course, $modinfo->get_section_info($sectionnum));
@@ -119,8 +120,8 @@ class report_editgroups_form extends moodleform {
                     }
 
                     // Display activity name.
-                    $iconmarkup = html_writer::empty_tag('img', array(
-                            'src' => $cm->get_icon_url(), 'class' => 'activityicon', 'alt' => '' ));
+                    $iconmarkup = html_writer::empty_tag('img', [
+                            'src' => $cm->get_icon_url(), 'class' => 'activityicon', 'alt' => '']);
                     $stractivityname = html_writer::tag('strong' , $iconmarkup . $cm->name);
 
                     // Activity name shall be displayed only if any group mode setting is
@@ -134,9 +135,9 @@ class report_editgroups_form extends moodleform {
                     $elname = '';
                     // If group mode is enabled for this module.
                     if ($isenabledgroups) {
-                        $groupoptions = array(NOGROUPS => get_string('groupsnone'),
+                        $groupoptions = [NOGROUPS => get_string('groupsnone'),
                         SEPARATEGROUPS => get_string('groupsseparate'),
-                        VISIBLEGROUPS  => get_string('groupsvisible'));
+                        VISIBLEGROUPS  => get_string('groupsvisible')];
 
                         // Create element name and append course module id to it.
                         $elname = 'groupmode['.$cm->id.']';

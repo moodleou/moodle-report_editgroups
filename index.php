@@ -33,13 +33,13 @@ $id = required_param('id', PARAM_INT); // Course id.
 $activitytype = optional_param('activitytype', '', PARAM_PLUGIN);
 
 // Should be a valid course id.
-$course = $DB->get_record('course', array('id' => $id), '*', MUST_EXIST);
+$course = $DB->get_record('course', ['id' => $id], '*', MUST_EXIST);
 
 // Needed to setup proper $COURSE.
 require_login($course);
 
 // Setup page.
-$urlparams = array('id' => $id);
+$urlparams = ['id' => $id];
 if ($activitytype) {
     $urlparams['activitytype'] = $activitytype;
 }
@@ -58,7 +58,7 @@ $cms = $modinfo->get_cms();
 // Prepare a list of activity types used in this course, and count the number that
 // might be displayed.
 $activitiesdisplayed = 0;
-$activitytypes = array();
+$activitytypes = [];
 foreach ($modinfo->get_sections() as $sectionnum => $section) {
     foreach ($section as $cmid) {
         $cm = $cms[$cmid];
@@ -77,31 +77,31 @@ foreach ($modinfo->get_sections() as $sectionnum => $section) {
 core_collator::asort($activitytypes);
 
 if ($activitiesdisplayed <= REPORT_EDITGROUPS_ENABLE_FILTER_THRESHOLD) {
-    $activitytypes = array('' => get_string('all')) + $activitytypes;
+    $activitytypes = ['' => get_string('all')] + $activitytypes;
 }
 
 // If activity count is above the threshold, activate the filter controls.
 if (!$activitytype && $activitiesdisplayed > REPORT_EDITGROUPS_ENABLE_FILTER_THRESHOLD) {
     reset($activitytypes);
     redirect(new moodle_url('/report/editgroups/index.php',
-            array('id' => $id, 'activitytype' => key($activitytypes))));
+            ['id' => $id, 'activitytype' => key($activitytypes)]));
 }
 
 // Creating form instance, passed course id as parameter to action url.
-$baseurl = new moodle_url('/report/editgroups/index.php', array('id' => $id));
-$mform = new report_editgroups_form($baseurl, array('modinfo' => $modinfo,
-        'course' => $course, 'activitytype' => $activitytype));
+$baseurl = new moodle_url('/report/editgroups/index.php', ['id' => $id]);
+$mform = new report_editgroups_form($baseurl, ['modinfo' => $modinfo,
+        'course' => $course, 'activitytype' => $activitytype]);
 
-$returnurl = new moodle_url('/course/view.php', array('id' => $id));
+$returnurl = new moodle_url('/course/view.php', ['id' => $id]);
 if ($mform->is_cancelled()) {
     // Redirect to course view page if form is cancelled.
     redirect($returnurl);
 
 } else if ($data = $mform->get_data()) {
 
-    $groupingids = array();
-    $groupmodes = array();
-    $groupmembersonly = array();
+    $groupingids = [];
+    $groupmodes = [];
+    $groupmembersonly = [];
     // Grouping id values from the $data.
     if (isset($data->groupingid) && is_array($data->groupingid)) {
         $groupingids = $data->groupingid;
@@ -166,7 +166,7 @@ $select->set_help_icon('activitytypefilter', 'report_editgroups');
 
 // Making log entry.
 $event = \report_editgroups\event\report_viewed::create(
-        array('context' => $coursecontext, 'other' => array('activitytype' => $activitytype)));
+        ['context' => $coursecontext, 'other' => ['activitytype' => $activitytype]]);
 $event->trigger();
 
 // Set page title and page heading.

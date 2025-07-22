@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Library code for the edit groups report
  *
@@ -22,8 +21,6 @@
  * @copyright 2012 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die;
 
 /**
  * This function extends the navigation with the report items
@@ -35,7 +32,7 @@ defined('MOODLE_INTERNAL') || die;
 function report_editgroups_extend_navigation_course($navigation, $course, $context) {
     global $CFG, $OUTPUT;
     if (has_capability('report/editgroups:view', $context)) {
-        $url = new moodle_url('/report/editgroups/index.php', array('id' => $course->id));
+        $url = new moodle_url('/report/editgroups/index.php', ['id' => $course->id]);
         if ($activitytype = optional_param('activitytype', '', PARAM_PLUGIN)) {
             $url->param('activitytype', $activitytype);
         }
@@ -53,9 +50,9 @@ function report_editgroups_extend_navigation_course($navigation, $course, $conte
  * @return array
  */
 function report_editgroups_page_type_list($pagetype, $parentcontext, $currentcontext) {
-    return array(
+    return [
         '*'                       => get_string('page-x', 'pagetype'),
         'report-*'                => get_string('page-report-x', 'pagetype'),
         'report-editgroups-index' => get_string('page-report-editgroups-index',  'report_editgroups'),
-    );
+    ];
 }
